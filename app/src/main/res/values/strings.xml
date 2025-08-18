@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">BookBuddy</string>
+    <string name="books">Knjige</string>
+    <string name="add_book">Dodaj knjigu</string>
+    <string name="settings">Postavke</string>
+    <string name="about">O aplikaciji</string>
+    <string name="search">Pretraži</string>
+    <string name="title">Naslov</string>
+    <string name="author">Autor</string>
+    <string name="rating">Ocjena</string>
+    <string name="delete">Obriši</string>
+    <string name="cancel">Odustani</string>
+    <string name="save">Spremi</string>
+</resources>
