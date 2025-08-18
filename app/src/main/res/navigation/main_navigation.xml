@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/bookListFragment">
+
+    <fragment
+        android:id="@+id/bookListFragment"
+        android:name="com.bruno.bookbuddy.ui.fragment.BookListFragment"
+        android:label="@string/books" />
+
+    <fragment
+        android:id="@+id/addBookFragment"
+        android:name="com.bruno.bookbuddy.ui.fragment.AddBookFragment"
+        android:label="@string/add_book" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.bruno.bookbuddy.ui.fragment.SettingsFragment"
+        android:label="@string/settings" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.bruno.bookbuddy.ui.fragment.AboutFragment"
+        android:label="@string/about" />
+
+</navigation>
