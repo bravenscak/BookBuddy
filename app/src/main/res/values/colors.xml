@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="status_want_to_read">#2196F3</color>
+    <color name="status_currently_reading">#FF9800</color>
+    <color name="status_finished">#4CAF50</color>
+    <color name="status_abandoned">#F44336</color>
 </resources>

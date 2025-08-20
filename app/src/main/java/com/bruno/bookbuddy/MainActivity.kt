@@ -6,6 +6,7 @@ import androidx.core.view.GravityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.bruno.bookbuddy.databinding.ActivityMainBinding
+import com.bruno.bookbuddy.utils.SampleDataHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,11 +18,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initToolbar()
+        initSampleData()
 
         // Odgodi navigation setup dok se layout ne završi
         binding.root.post {
             initNavigation()
         }
+    }
+
+    private fun initSampleData() {
+        SampleDataHelper.addSampleBooksIfEmpty(this)
     }
 
     private fun initToolbar() {

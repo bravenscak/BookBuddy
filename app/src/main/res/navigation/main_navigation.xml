@@ -7,7 +7,20 @@
     <fragment
         android:id="@+id/bookListFragment"
         android:name="com.bruno.bookbuddy.ui.fragment.BookListFragment"
-        android:label="@string/books" />
+        android:label="@string/books">
+        <action
+            android:id="@+id/action_bookList_to_bookDetail"
+            app:destination="@id/bookDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.bruno.bookbuddy.ui.fragment.BookDetailFragment"
+        android:label="Book Details">
+        <argument
+            android:name="bookId"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/addBookFragment"

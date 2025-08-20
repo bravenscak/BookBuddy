@@ -11,4 +11,8 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+
+    <string name="sure_to_delete">Are you sure you want to delete "%1$s"?</string>
+    <string name="no_books_found">No books added</string>
+    <string name="add_your_first_book">Add your first book!</string>
 </resources>

@@ -11,4 +11,8 @@
     <string name="delete">Obriši</string>
     <string name="cancel">Odustani</string>
     <string name="save">Spremi</string>
+
+    <string name="sure_to_delete">Jeste li sigurni da želite obrisati knjugu "%1$s"?</string>
+    <string name="no_books_found">Nema dodanih knjiga</string>
+    <string name="add_your_first_book">Dodajte svoju prvu knjigu!</string>
 </resources>
