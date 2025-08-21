@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
-import com.bruno.bookbuddy.data.repository.getBookRepository
+import com.bruno.bookbuddy.utils.deleteBookViaProvider
 import com.google.android.material.chip.Chip
 import java.io.File
 
@@ -20,8 +20,6 @@ class BookAdapter(
     private val books: MutableList<Book>,
     private val onBookClick: (Book, Int) -> Unit
 ) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
-
-    private val repository = getBookRepository(context)
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivBookCover: ImageView = itemView.findViewById(R.id.ivBookCover)
@@ -114,7 +112,7 @@ class BookAdapter(
     private fun deleteBook(position: Int) {
         val book = books[position]
         book._id?.let { bookId ->
-            repository.deleteBook(bookId)
+            context.deleteBookViaProvider(bookId)
             books.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, books.size)

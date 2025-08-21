@@ -3,13 +3,22 @@ package com.bruno.bookbuddy.ui.fragment
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.appcompat.app.AlertDialog
 import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.FragmentBookDetailBinding
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
-import com.bruno.bookbuddy.data.repository.getBookRepository
+import com.bruno.bookbuddy.utils.getBookByIdFromProvider
+import com.bruno.bookbuddy.utils.deleteBookViaProvider
 import java.io.File
 
 class BookDetailFragment : Fragment() {
@@ -22,9 +31,7 @@ class BookDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            bookId = it.getLong(ARG_BOOK_ID)
-        }
+        bookId = arguments?.getLong("bookId") ?: 0
     }
 
     override fun onCreateView(
@@ -37,12 +44,78 @@ class BookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupMenu()
         loadBookDetails()
     }
 
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.book_detail_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_edit -> {
+                        navigateToEditBook()
+                        true
+                    }
+                    R.id.action_delete -> {
+                        showDeleteConfirmation()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun navigateToEditBook() {
+        val bundle = Bundle().apply {
+            putLong("bookId", bookId)
+        }
+        findNavController().navigate(R.id.action_bookDetail_to_editBook, bundle)
+    }
+
+    private fun showDeleteConfirmation() {
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(getString(R.string.delete))
+            setMessage(getString(R.string.sure_to_delete, book.title))
+            setIcon(R.drawable.ic_delete)
+            setCancelable(true)
+            setPositiveButton(android.R.string.ok) { _, _ ->
+                deleteBook()
+            }
+            setNegativeButton(getString(R.string.cancel), null)
+            show()
+        }
+    }
+
+    private fun deleteBook() {
+        val rowsDeleted = requireContext().deleteBookViaProvider(bookId)
+
+        if (rowsDeleted > 0) {
+            if (book.coverPath.isNotEmpty()) {
+                File(book.coverPath).delete()
+            }
+            findNavController().navigateUp()
+        } else {
+            showErrorDialog("Failed to delete book")
+        }
+    }
+
+    private fun showErrorDialog(message: String) {
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Error")
+            setMessage(message)
+            setPositiveButton(android.R.string.ok, null)
+            show()
+        }
+    }
+
     private fun loadBookDetails() {
-        val repository = getBookRepository(requireContext())
-        val loadedBook = repository.getBookById(bookId)
+        val loadedBook = requireContext().getBookByIdFromProvider(bookId)
 
         if (loadedBook != null) {
             book = loadedBook
@@ -98,15 +171,5 @@ class BookDetailFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val ARG_BOOK_ID = "bookId"
-
-        fun newInstance(bookId: Long) = BookDetailFragment().apply {
-            arguments = Bundle().apply {
-                putLong(ARG_BOOK_ID, bookId)
-            }
-        }
     }
 }

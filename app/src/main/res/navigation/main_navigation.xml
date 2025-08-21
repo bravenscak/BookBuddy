@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_bookList_to_bookDetail"
             app:destination="@id/bookDetailFragment" />
+        <action
+            android:id="@+id/action_bookList_to_addBook"
+            app:destination="@id/addBookFragment" />
     </fragment>
 
     <fragment
@@ -20,12 +23,20 @@
         <argument
             android:name="bookId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_bookDetail_to_editBook"
+            app:destination="@id/addBookFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/addBookFragment"
         android:name="com.bruno.bookbuddy.ui.fragment.AddBookFragment"
-        android:label="@string/add_book" />
+        android:label="@string/add_book">
+        <argument
+            android:name="bookId"
+            app:argType="long"
+            app:defaultValue="-1L" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"

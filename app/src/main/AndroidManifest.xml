@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,15 +17,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookBuddy"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".data.provider.BookContentProvider"
+            android:authorities="com.bruno.bookbuddy.provider"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receiver.BookSyncReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.bruno.bookbuddy.ACTION_SYNC_COMPLETE" />
+                <action android:name="com.bruno.bookbuddy.ACTION_BOOK_ADDED" />
+                <action android:name="com.bruno.bookbuddy.ACTION_READING_REMINDER" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

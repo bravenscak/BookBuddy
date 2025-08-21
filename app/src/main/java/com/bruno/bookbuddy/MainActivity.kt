@@ -1,7 +1,12 @@
 package com.bruno.bookbuddy
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -12,17 +17,36 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        checkNotificationPermission()
         initToolbar()
         initSampleData()
 
-        // Odgodi navigation setup dok se layout ne završi
         binding.root.post {
             initNavigation()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasPermission) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 
@@ -38,14 +62,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initNavigation() {
         try {
-            // Sigurniji način dohvaćanja NavController-a
             val navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.navController) as NavHostFragment
             val navController = navHostFragment.navController
 
             NavigationUI.setupWithNavController(binding.navView, navController)
         } catch (e: Exception) {
-            // Fallback - bez navigation drawer-a za sada
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }
     }
