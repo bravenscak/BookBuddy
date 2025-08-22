@@ -1,5 +1,8 @@
 package com.bruno.bookbuddy.ui.fragment
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +10,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.ExistingWorkPolicy
@@ -27,10 +32,18 @@ class BookListFragment : Fragment() {
     private lateinit var bookAdapter: BookAdapter
     private val books = mutableListOf<Book>()
 
-    // Pull-to-refresh timeout handler
     private val refreshTimeoutHandler = Handler(Looper.getMainLooper())
     private var refreshTimeoutRunnable: Runnable? = null
-    private val REFRESH_TIMEOUT_MS = 8000L // 8 seconds max loading
+    private val REFRESH_TIMEOUT_MS = 8000L
+
+    private val storagePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+        } else {
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,8 +72,8 @@ class BookListFragment : Fragment() {
         bookAdapter = BookAdapter(
             context = requireContext(),
             books = books,
-            onBookClick = { book, position ->
-                navigateToBookDetail(book)
+            onBookClick = { bookId ->
+                navigateToBookDetail(bookId)
             }
         )
 
@@ -76,7 +89,6 @@ class BookListFragment : Fragment() {
             refreshBooks()
         }
 
-        // Material Design color scheme
         binding.swipeRefreshLayout.setColorSchemeResources(
             android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
@@ -86,18 +98,23 @@ class BookListFragment : Fragment() {
     }
 
     private fun refreshBooks() {
-        // Set timeout for refresh
         refreshTimeoutRunnable = Runnable {
             if (binding.swipeRefreshLayout.isRefreshing) {
                 binding.swipeRefreshLayout.isRefreshing = false
-                // Could show a timeout message here if needed
             }
         }
         refreshTimeoutHandler.postDelayed(refreshTimeoutRunnable!!, REFRESH_TIMEOUT_MS)
 
-        // Start background sync work
+        val currentBooks = requireContext().fetchBooksFromProvider()
+        val shouldReset = currentBooks.size <= 5
+
+        val inputData = androidx.work.Data.Builder()
+            .putBoolean(BookSyncWorker.KEY_RESET_OFFSET, shouldReset)
+            .build()
+
         val syncWorkRequest = OneTimeWorkRequest.Builder(BookSyncWorker::class.java)
             .addTag(BookSyncWorker.TAG_POPULAR_SYNC)
+            .setInputData(inputData)
             .build()
 
         WorkManager.getInstance(requireContext()).enqueueUniqueWork(
@@ -106,34 +123,28 @@ class BookListFragment : Fragment() {
             syncWorkRequest
         )
 
-        // Monitor work completion
         WorkManager.getInstance(requireContext())
             .getWorkInfoByIdLiveData(syncWorkRequest.id)
             .observe(viewLifecycleOwner) { workInfo ->
                 if (workInfo != null && workInfo.state.isFinished) {
-                    // Cancel timeout
                     refreshTimeoutRunnable?.let {
                         refreshTimeoutHandler.removeCallbacks(it)
                     }
 
-                    // Stop refresh animation
                     if (binding.swipeRefreshLayout.isRefreshing) {
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
 
-                    // Reload books from database
                     loadBooks()
                 }
             }
     }
 
-    private fun navigateToBookDetail(book: Book) {
-        book._id?.let { bookId ->
-            val bundle = Bundle().apply {
-                putLong("bookId", bookId)
-            }
-            findNavController().navigate(R.id.action_bookList_to_bookDetail, bundle)
+    private fun navigateToBookDetail(bookId: Long) {
+        val bundle = Bundle().apply {
+            putLong("bookId", bookId)
         }
+        findNavController().navigate(R.id.action_bookList_to_bookDetail, bundle)
     }
 
     private fun loadBooks() {
@@ -166,7 +177,6 @@ class BookListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Clean up timeout handler
         refreshTimeoutRunnable?.let {
             refreshTimeoutHandler.removeCallbacks(it)
         }

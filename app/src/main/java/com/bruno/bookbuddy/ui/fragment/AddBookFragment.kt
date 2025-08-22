@@ -20,6 +20,7 @@ import java.util.Date
 import java.util.Locale
 import com.bruno.bookbuddy.network.service.BookFetcher
 import com.bruno.bookbuddy.network.model.BookApiItem
+import com.bruno.bookbuddy.utils.GenreUtils
 
 class AddBookFragment : Fragment() {
 
@@ -70,20 +71,7 @@ class AddBookFragment : Fragment() {
     }
 
     private fun setupGenreDropdown() {
-        val genres = Genre.values().map { genre ->
-            when (genre) {
-                Genre.FICTION -> "Fiction"
-                Genre.NON_FICTION -> "Non-Fiction"
-                Genre.MYSTERY -> "Mystery"
-                Genre.ROMANCE -> "Romance"
-                Genre.SCIENCE_FICTION -> "Science Fiction"
-                Genre.FANTASY -> "Fantasy"
-                Genre.BIOGRAPHY -> "Biography"
-                Genre.HISTORY -> "History"
-                Genre.SELF_HELP -> "Self-Help"
-                Genre.OTHER -> "Other"
-            }
-        }
+        val genres = GenreUtils.getAllDisplayNames()
 
         val genreAdapter = ArrayAdapter(
             requireContext(),
@@ -196,11 +184,12 @@ class AddBookFragment : Fragment() {
         }
 
         val apiGenre = apiItem.getMainGenre()
-        val displayGenre = mapApiGenreToDisplayName(apiGenre)
+        val enumGenre = GenreUtils.mapApiGenreToEnum(apiGenre)
+        val displayGenre = GenreUtils.enumToDisplay(enumGenre)
         binding.actvGenre.setText(displayGenre, false)
 
         apiItem.getCoverUrl()?.let { coverUrl ->
-
+            // TODO: Load cover image
         }
     }
 
@@ -331,19 +320,7 @@ class AddBookFragment : Fragment() {
     }
 
     private fun getSelectedGenre(): String {
-        return when (binding.actvGenre.text.toString()) {
-            "Fiction" -> Genre.FICTION.name
-            "Non-Fiction" -> Genre.NON_FICTION.name
-            "Mystery" -> Genre.MYSTERY.name
-            "Romance" -> Genre.ROMANCE.name
-            "Science Fiction" -> Genre.SCIENCE_FICTION.name
-            "Fantasy" -> Genre.FANTASY.name
-            "Biography" -> Genre.BIOGRAPHY.name
-            "History" -> Genre.HISTORY.name
-            "Self-Help" -> Genre.SELF_HELP.name
-            "Other" -> Genre.OTHER.name
-            else -> Genre.OTHER.name
-        }
+        return GenreUtils.displayToEnum(binding.actvGenre.text.toString())
     }
 
     private fun getSelectedStatus(): ReadingStatus {
@@ -397,19 +374,7 @@ class AddBookFragment : Fragment() {
     }
 
     private fun getGenreDisplayName(genreEnum: String): String {
-        return when (genreEnum) {
-            Genre.FICTION.name -> "Fiction"
-            Genre.NON_FICTION.name -> "Non-Fiction"
-            Genre.MYSTERY.name -> "Mystery"
-            Genre.ROMANCE.name -> "Romance"
-            Genre.SCIENCE_FICTION.name -> "Science Fiction"
-            Genre.FANTASY.name -> "Fantasy"
-            Genre.BIOGRAPHY.name -> "Biography"
-            Genre.HISTORY.name -> "History"
-            Genre.SELF_HELP.name -> "Self-Help"
-            Genre.OTHER.name -> "Other"
-            else -> "Other"
-        }
+        return GenreUtils.enumToDisplay(genreEnum)
     }
 
     private fun getStatusDisplayName(status: ReadingStatus): String {

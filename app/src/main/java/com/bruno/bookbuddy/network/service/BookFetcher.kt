@@ -19,11 +19,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Date
+import com.bruno.bookbuddy.data.model.Genre
+import com.bruno.bookbuddy.utils.GenreUtils
 import java.util.Locale
 
 class BookFetcher(private val context: Context) {
 
     private var bookApi: BookApi
+
     private var currentOffset = 0
 
     init {
@@ -84,15 +87,21 @@ class BookFetcher(private val context: Context) {
                 completed++
 
                 if (completed >= randomTerms.size) {
-                    currentOffset += 5
+                    if (totalAdded > 0) {
+                        currentOffset += 2
+                    }
                     onComplete(totalAdded)
                 }
             }
         }
     }
 
+    fun resetOffset() {
+        currentOffset = 0
+    }
+
     private fun searchWithOffset(term: String, onResult: (Int) -> Unit) {
-        val request = bookApi.searchBooksWithOffset(term, 10, currentOffset)
+        val request = bookApi.searchBooksWithOffset(term, 5, currentOffset) // Smanji limit
 
         request.enqueue(object : Callback<BookSearchResponse> {
             override fun onResponse(
@@ -101,7 +110,7 @@ class BookFetcher(private val context: Context) {
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { searchResponse ->
-                        val booksToAdd = searchResponse.docs.take(1)
+                        val booksToAdd = searchResponse.docs.take(1) // Samo 1 knjiga po termu
                         addBooksFromResponse(booksToAdd, term, onResult)
                     } ?: onResult(0)
                 } else {
@@ -172,20 +181,21 @@ class BookFetcher(private val context: Context) {
     private fun getGenreFromSearchTerm(searchTerm: String, apiItem: BookApiItem): String {
         val apiGenre = apiItem.getMainGenre()
 
-        if (apiGenre != "Fiction" && apiGenre != "Other") {
-            return mapToEnumGenre(apiGenre)
+        val mappedFromApi = GenreUtils.mapApiGenreToEnum(apiGenre)
+        if (mappedFromApi != Genre.FICTION.name && mappedFromApi != Genre.OTHER.name) {
+            return mappedFromApi
         }
 
         return when {
-            searchTerm.contains("science") -> "SCIENCE_FICTION"
-            searchTerm.contains("biography") -> "BIOGRAPHY"
-            searchTerm.contains("mystery") -> "MYSTERY"
-            searchTerm.contains("classic") -> "FICTION"
-            searchTerm.contains("bestseller") -> "FICTION"
-            searchTerm.contains("fantasy") -> "FANTASY"
-            searchTerm.contains("romance") -> "ROMANCE"
-            searchTerm.contains("history") -> "HISTORY"
-            else -> "OTHER"
+            searchTerm.contains("science", ignoreCase = true) -> Genre.SCIENCE_FICTION.name
+            searchTerm.contains("biography", ignoreCase = true) -> Genre.BIOGRAPHY.name
+            searchTerm.contains("mystery", ignoreCase = true) -> Genre.MYSTERY.name
+            searchTerm.contains("classic", ignoreCase = true) -> Genre.FICTION.name
+            searchTerm.contains("bestseller", ignoreCase = true) -> Genre.FICTION.name
+            searchTerm.contains("fantasy", ignoreCase = true) -> Genre.FANTASY.name
+            searchTerm.contains("romance", ignoreCase = true) -> Genre.ROMANCE.name
+            searchTerm.contains("history", ignoreCase = true) -> Genre.HISTORY.name
+            else -> Genre.OTHER.name
         }
     }
 

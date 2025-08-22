@@ -41,7 +41,8 @@
             android:layout_height="120dp"
             android:src="@drawable/ic_book"
             android:alpha="0.3"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:contentDescription="No books icon" />
 
         <TextView
             android:id="@+id/tvEmptyState"

@@ -12,13 +12,14 @@ import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
 import com.bruno.bookbuddy.utils.deleteBookViaProvider
+import com.bruno.bookbuddy.utils.GenreUtils
 import com.google.android.material.chip.Chip
 import java.io.File
 
 class BookAdapter(
     private val context: Context,
     private val books: MutableList<Book>,
-    private val onBookClick: (Book, Int) -> Unit
+    private val onBookClick: (Long) -> Unit
 ) : RecyclerView.Adapter<BookAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,7 +35,7 @@ class BookAdapter(
             tvBookTitle.text = book.title
             tvBookAuthor.text = book.author
             tvBookYear.text = book.year.toString()
-            chipGenre.text = book.genre
+            chipGenre.text = GenreUtils.enumToDisplay(book.genre)
 
             chipStatus.text = when (book.status) {
                 ReadingStatus.WANT_TO_READ -> "Want to Read"
@@ -83,7 +84,9 @@ class BookAdapter(
         val book = books[position]
 
         holder.itemView.setOnClickListener {
-            onBookClick(book, position)
+            book._id?.let { bookId ->
+                onBookClick(bookId)
+            }
         }
 
         holder.itemView.setOnLongClickListener {
@@ -112,13 +115,16 @@ class BookAdapter(
     private fun deleteBook(position: Int) {
         val book = books[position]
         book._id?.let { bookId ->
-            context.deleteBookViaProvider(bookId)
-            books.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, books.size)
+            val rowsDeleted = context.deleteBookViaProvider(bookId)
 
-            if (book.coverPath.isNotEmpty()) {
-                File(book.coverPath).delete()
+            if (rowsDeleted > 0) {
+                books.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, books.size)
+
+                if (book.coverPath.isNotEmpty()) {
+                    File(book.coverPath).delete()
+                }
             }
         }
     }

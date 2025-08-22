@@ -34,12 +34,16 @@ class BookContentProvider : ContentProvider() {
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         return when (URI_MATCHER.match(uri)) {
-            BOOKS -> repository.delete(selection, selectionArgs)
+            BOOKS -> {
+                repository.delete(selection, selectionArgs)
+            }
             BOOK_ID -> {
                 val id = uri.lastPathSegment ?: return 0
                 repository.delete("${Book::_id.name}=?", arrayOf(id))
             }
-            else -> throw IllegalArgumentException("Unknown URI: $uri")
+            else -> {
+                throw IllegalArgumentException("Unknown URI: $uri")
+            }
         }
     }
 
@@ -60,7 +64,20 @@ class BookContentProvider : ContentProvider() {
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
     ): Cursor? {
-        return repository.query(projection, selection, selectionArgs, sortOrder)
+        return when (URI_MATCHER.match(uri)) {
+            BOOKS -> {
+                repository.query(projection, selection, selectionArgs, sortOrder)
+            }
+            BOOK_ID -> {
+                val id = uri.lastPathSegment ?: return null
+                val finalSelection = "${Book::_id.name}=?"
+                val finalSelectionArgs = arrayOf(id)
+                repository.query(projection, finalSelection, finalSelectionArgs, sortOrder)
+            }
+            else -> {
+                throw IllegalArgumentException("Unknown URI: $uri")
+            }
+        }
     }
 
     override fun update(
@@ -68,12 +85,16 @@ class BookContentProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ): Int {
         return when (URI_MATCHER.match(uri)) {
-            BOOKS -> repository.update(values, selection, selectionArgs)
+            BOOKS -> {
+                repository.update(values, selection, selectionArgs)
+            }
             BOOK_ID -> {
                 val id = uri.lastPathSegment ?: return 0
                 repository.update(values, "${Book::_id.name}=?", arrayOf(id))
             }
-            else -> throw IllegalArgumentException("Unknown URI: $uri")
+            else -> {
+                throw IllegalArgumentException("Unknown URI: $uri")
+            }
         }
     }
 }

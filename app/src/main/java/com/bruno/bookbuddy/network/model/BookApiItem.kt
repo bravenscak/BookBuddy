@@ -33,14 +33,47 @@ data class BookApiItem(
         val subjects = subject ?: return "Fiction"
 
         return when {
-            subjects.any { it.contains("fiction", true) } -> "Fiction"
-            subjects.any { it.contains("science", true) } -> "Science"
-            subjects.any { it.contains("history", true) } -> "History"
-            subjects.any { it.contains("biography", true) } -> "Biography"
-            subjects.any { it.contains("romance", true) } -> "Romance"
-            subjects.any { it.contains("mystery", true) } -> "Mystery"
-            subjects.any { it.contains("fantasy", true) } -> "Fantasy"
+            subjects.any { it.contains("biography", true) ||
+                    it.contains("memoir", true) } -> "Biography"
+
+            subjects.any { it.contains("mystery", true) ||
+                    it.contains("detective", true) ||
+                    it.contains("crime", true) } -> "Mystery"
+
+            subjects.any { it.contains("romance", true) ||
+                    it.contains("love story", true) } -> "Romance"
+
+            subjects.any { it.contains("fantasy", true) ||
+                    it.contains("magic", true) ||
+                    it.contains("wizard", true) } -> "Fantasy"
+
+            subjects.any { it.contains("science fiction", true) ||
+                    it.contains("sci-fi", true) ||
+                    it.contains("space", true) ||
+                    it.contains("future", true) } -> "Science Fiction"
+
+            subjects.any { it.contains("history", true) ||
+                    it.contains("historical", true) } -> "History"
+
+            subjects.any { it.contains("science", true) &&
+                    !it.contains("fiction", true) } -> "Science"
+
+            subjects.any { it.contains("self-help", true) ||
+                    it.contains("personal development", true) ||
+                    it.contains("psychology", true) } -> "Self-Help"
+
+            subjects.any { it.contains("fiction", true) ||
+                    it.contains("novel", true) ||
+                    it.contains("literature", true) } -> "Fiction"
+
+            subjects.any { it.contains("non-fiction", true) ||
+                    it.contains("nonfiction", true) } -> "Non-Fiction"
+
             else -> "Other"
         }
+    }
+
+    fun getSubjectsForDebug(): String {
+        return subject?.joinToString(", ") ?: "No subjects"
     }
 }

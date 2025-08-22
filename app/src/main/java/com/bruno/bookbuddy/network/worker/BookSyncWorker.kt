@@ -20,6 +20,11 @@ class BookSyncWorker(
             val latch = CountDownLatch(1)
             var booksAdded = 0
 
+            val shouldReset = inputData.getBoolean(KEY_RESET_OFFSET, false)
+            if (shouldReset) {
+                bookFetcher.resetOffset()
+            }
+
             bookFetcher.fetchPopularBooks { count ->
                 booksAdded = count
                 latch.countDown()
@@ -51,5 +56,6 @@ class BookSyncWorker(
     companion object {
         const val WORK_NAME = "book_sync_work"
         const val TAG_POPULAR_SYNC = "popular_sync"
+        const val KEY_RESET_OFFSET = "reset_offset"
     }
 }

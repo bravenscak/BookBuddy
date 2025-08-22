@@ -1,6 +1,7 @@
 package com.bruno.bookbuddy.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -32,6 +33,7 @@ class BookDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bookId = arguments?.getLong("bookId") ?: 0
+        Log.d("BookDetailFragment", "onCreate: Received bookId = $bookId")
     }
 
     override fun onCreateView(
@@ -44,6 +46,7 @@ class BookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("BookDetailFragment", "onViewCreated: bookId = $bookId")
         setupMenu()
         loadBookDetails()
     }
@@ -72,6 +75,7 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun navigateToEditBook() {
+        Log.d("BookDetailFragment", "navigateToEditBook: bookId = $bookId")
         val bundle = Bundle().apply {
             putLong("bookId", bookId)
         }
@@ -79,6 +83,7 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun showDeleteConfirmation() {
+        Log.d("BookDetailFragment", "showDeleteConfirmation: bookId = $bookId, title = ${book.title}")
         AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.delete))
             setMessage(getString(R.string.sure_to_delete, book.title))
@@ -93,7 +98,9 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun deleteBook() {
+        Log.d("BookDetailFragment", "deleteBook: Deleting bookId = $bookId")
         val rowsDeleted = requireContext().deleteBookViaProvider(bookId)
+        Log.d("BookDetailFragment", "deleteBook: Rows deleted = $rowsDeleted")
 
         if (rowsDeleted > 0) {
             if (book.coverPath.isNotEmpty()) {
@@ -115,18 +122,22 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun loadBookDetails() {
+        Log.d("BookDetailFragment", "loadBookDetails: Loading book with ID = $bookId")
         val loadedBook = requireContext().getBookByIdFromProvider(bookId)
 
         if (loadedBook != null) {
             book = loadedBook
+            Log.d("BookDetailFragment", "loadBookDetails: Loaded book: ID=${book._id}, Title=${book.title}")
             displayBookDetails()
         } else {
+            Log.e("BookDetailFragment", "loadBookDetails: Book not found for ID = $bookId")
             binding.tvBookTitle.text = "Book not found"
             binding.tvBookAuthor.text = "Error loading book details"
         }
     }
 
     private fun displayBookDetails() {
+        Log.d("BookDetailFragment", "displayBookDetails: Displaying book: ${book.title}")
         binding.apply {
             tvBookTitle.text = book.title
             tvBookAuthor.text = book.author
