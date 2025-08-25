@@ -1,17 +1,16 @@
 package com.bruno.bookbuddy.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.navigation.fragment.findNavController
-import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.FragmentAddBookBinding
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
-import com.bruno.bookbuddy.data.model.Genre
 import com.bruno.bookbuddy.utils.insertBookViaProvider
 import com.bruno.bookbuddy.utils.getBookByIdFromProvider
 import com.bruno.bookbuddy.utils.updateBookViaProvider
@@ -19,7 +18,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.bruno.bookbuddy.network.service.BookFetcher
-import com.bruno.bookbuddy.network.model.BookApiItem
+import com.bruno.bookbuddy.network.model.GoogleBookItem
+import com.bruno.bookbuddy.network.model.getMainAuthor
+import com.bruno.bookbuddy.network.model.getMainGenre
+import com.bruno.bookbuddy.network.model.getPublishYear
 import com.bruno.bookbuddy.utils.GenreUtils
 
 class AddBookFragment : Fragment() {
@@ -153,9 +155,17 @@ class AddBookFragment : Fragment() {
         )
     }
 
-    private fun handleSearchResults(books: List<BookApiItem>) {
+    private fun handleSearchResults(books: List<GoogleBookItem>) {
         binding.btnSearchApi.isEnabled = true
         binding.btnSearchApi.text = "Search Online"
+
+        Log.d("AddBookFragment", "=== SEARCH RESULTS ===")
+        Log.d("AddBookFragment", "Found ${books.size} books")
+
+        books.forEach { book ->
+            Log.d("AddBookFragment", "Book: ${book.volumeInfo.title}")
+            Log.d("AddBookFragment", "  Main genre: ${book.getMainGenre()}")
+        }
 
         if (books.isNotEmpty()) {
             val firstBook = books.first()
@@ -175,22 +185,18 @@ class AddBookFragment : Fragment() {
         binding.tilTitle.error = "Search failed: $error"
     }
 
-    private fun populateFormFromApi(apiItem: BookApiItem) {
-        binding.etTitle.setText(apiItem.title ?: "")
-        binding.etAuthor.setText(apiItem.getMainAuthor())
+    private fun populateFormFromApi(googleBook: GoogleBookItem) {
+        binding.etTitle.setText(googleBook.volumeInfo.title ?: "")
+        binding.etAuthor.setText(googleBook.getMainAuthor())
 
-        if (apiItem.getPublishYear() > 0) {
-            binding.etYear.setText(apiItem.getPublishYear().toString())
+        if (googleBook.getPublishYear() > 0) {
+            binding.etYear.setText(googleBook.getPublishYear().toString())
         }
 
-        val apiGenre = apiItem.getMainGenre()
+        val apiGenre = googleBook.getMainGenre()
         val enumGenre = GenreUtils.mapApiGenreToEnum(apiGenre)
         val displayGenre = GenreUtils.enumToDisplay(enumGenre)
         binding.actvGenre.setText(displayGenre, false)
-
-        apiItem.getCoverUrl()?.let { coverUrl ->
-            // TODO: Load cover image
-        }
     }
 
     private fun mapApiGenreToDisplayName(apiGenre: String): String {

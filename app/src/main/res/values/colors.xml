@@ -7,4 +7,18 @@
     <color name="status_currently_reading">#FF9800</color>
     <color name="status_finished">#4CAF50</color>
     <color name="status_abandoned">#F44336</color>
+
+    <color name="splash_background">#1565C0</color>
+    <color name="splash_icon_color">#FFFFFF</color>
+    <color name="splash_text_color">#FFFFFF</color>
+    <color name="splash_text_secondary">#FFFFFF</color>
+    <color name="splash_progress_color">#FFFFFF</color>
+
+    <color name="primary_color">#1976D2</color>
+    <color name="primary_dark_color">#1565C0</color>
+    <color name="accent_color">#FF5722</color>
+
+    <color name="surface_color">#FAFAFA</color>
+    <color name="on_surface_color">#212121</color>
+    <color name="card_background">#FFFFFF</color>
 </resources>

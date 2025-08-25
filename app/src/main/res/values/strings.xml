@@ -15,4 +15,30 @@
     <string name="sure_to_delete">Jeste li sigurni da želite obrisati knjugu "%1$s"?</string>
     <string name="no_books_found">Nema dodanih knjiga</string>
     <string name="add_your_first_book">Dodajte svoju prvu knjigu!</string>
+
+    <string name="app_slogan">Vaš digitalni dnevnik čitanja</string>
+    <string name="splash_loading">Učitavanje...</string>
+
+    <string name="genre_fiction">Fikcija</string>
+    <string name="genre_non_fiction">Nefikcija</string>
+    <string name="genre_mystery">Misterij</string>
+    <string name="genre_romance">Romansa</string>
+    <string name="genre_science_fiction">Znanstvena fantastika</string>
+    <string name="genre_fantasy">Fantazija</string>
+    <string name="genre_biography">Biografija</string>
+    <string name="genre_history">Povijest</string>
+    <string name="genre_self_help">Samopomoć</string>
+    <string name="genre_other">Ostalo</string>
+
+    <string name="status_want_to_read">Želim pročitati</string>
+    <string name="status_currently_reading">Trenutno čitam</string>
+    <string name="status_finished">Završeno</string>
+    <string name="status_abandoned">Napušteno</string>
+
+    <string name="notification_channel_name">BookBuddy obavijesti</string>
+    <string name="notification_channel_description">Obavijesti o čitanju i knjigama</string>
+    <string name="notification_reading_reminder_title">Vrijeme za čitanje! 📚</string>
+    <string name="notification_reading_reminder_text">Niste otvorili BookBuddy neko vrijeme. Pogledajte svoju kolekciju!</string>
+    <string name="notification_new_books_title">Nove knjige dostupne</string>
+    <string name="notification_new_books_text">%1$d novih knjiga dodano u vašu biblioteku</string>
 </resources>

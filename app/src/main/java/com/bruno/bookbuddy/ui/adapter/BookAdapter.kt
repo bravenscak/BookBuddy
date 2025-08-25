@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -83,6 +84,8 @@ class BookAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val book = books[position]
 
+        holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.book_add_animation))
+
         holder.itemView.setOnClickListener {
             book._id?.let { bookId ->
                 onBookClick(bookId)
@@ -114,6 +117,7 @@ class BookAdapter(
 
     private fun deleteBook(position: Int) {
         val book = books[position]
+
         book._id?.let { bookId ->
             val rowsDeleted = context.deleteBookViaProvider(bookId)
 
