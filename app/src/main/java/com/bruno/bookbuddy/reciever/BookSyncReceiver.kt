@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.bruno.bookbuddy.MainActivity
 import com.bruno.bookbuddy.R
+import com.bruno.bookbuddy.utils.LocaleHelper
 
 class BookSyncReceiver : BroadcastReceiver() {
 
@@ -23,14 +24,15 @@ class BookSyncReceiver : BroadcastReceiver() {
     }
 
     private fun handleSyncComplete(context: Context, intent: Intent) {
+        val localizedContext = LocaleHelper.setLocale(context, LocaleHelper.getCurrentLanguage(context))
         val booksAdded = intent.getIntExtra(EXTRA_BOOKS_ADDED, 0)
         val timestamp = intent.getLongExtra(EXTRA_TIMESTAMP, System.currentTimeMillis())
 
         if (booksAdded > 0) {
             showNotification(
                 context,
-                "New Books Available",
-                "$booksAdded new books added to your library",
+                localizedContext.getString(R.string.notification_new_books_title),
+                localizedContext.getString(R.string.notification_new_books_text, booksAdded),
                 NOTIFICATION_ID_SYNC,
                 createRefreshIntent(context)
             )
@@ -40,22 +42,25 @@ class BookSyncReceiver : BroadcastReceiver() {
     }
 
     private fun handleBookAdded(context: Context, intent: Intent) {
-        val bookTitle = intent.getStringExtra(EXTRA_BOOK_TITLE) ?: "New Book"
+        val localizedContext = LocaleHelper.setLocale(context, LocaleHelper.getCurrentLanguage(context))
+        val bookTitle = intent.getStringExtra(EXTRA_BOOK_TITLE) ?: localizedContext.getString(R.string.new_book)
 
         showNotification(
             context,
-            "Book Added",
-            "\"$bookTitle\" has been added to your library",
+            localizedContext.getString(R.string.book_added_title),
+            localizedContext.getString(R.string.book_added_text, bookTitle),
             NOTIFICATION_ID_BOOK_ADDED,
             createRefreshIntent(context)
         )
     }
 
     private fun handleReadingReminder(context: Context) {
+        val localizedContext = LocaleHelper.setLocale(context, LocaleHelper.getCurrentLanguage(context))
+
         showNotification(
             context,
-            "Time to Read! 📚",
-            "You haven't opened BookBuddy in a while. Check out your collection!",
+            localizedContext.getString(R.string.notification_reading_reminder_title),
+            localizedContext.getString(R.string.notification_reading_reminder_text),
             NOTIFICATION_ID_REMINDER,
             createRefreshIntent(context)
         )

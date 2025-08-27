@@ -1,5 +1,6 @@
 package com.bruno.bookbuddy.ui.activity
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bruno.bookbuddy.MainActivity
 import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.ActivitySplashBinding
+import com.bruno.bookbuddy.utils.LocaleHelper
 
 class SplashActivity : AppCompatActivity() {
 
@@ -52,5 +54,11 @@ class SplashActivity : AppCompatActivity() {
 
             binding.root.startAnimation(fadeOutAnimation)
         }, splashTimeOut)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = LocaleHelper.getCurrentLanguage(newBase)
+        val context = LocaleHelper.setLocale(newBase, language)
+        super.attachBaseContext(context)
     }
 }

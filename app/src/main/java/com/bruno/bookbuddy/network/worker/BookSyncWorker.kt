@@ -2,6 +2,8 @@ package com.bruno.bookbuddy.network.worker
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.bruno.bookbuddy.network.service.BookFetcher
@@ -15,6 +17,10 @@ class BookSyncWorker(
 ) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
+        if (!hasNetworkConnection()) {
+            return Result.retry()
+        }
+
         return try {
             val bookFetcher = BookFetcher(context)
             val latch = CountDownLatch(1)
@@ -51,6 +57,15 @@ class BookSyncWorker(
             putExtra(BookSyncReceiver.EXTRA_TIMESTAMP, System.currentTimeMillis())
         }
         context.sendBroadcast(intent)
+    }
+
+    private fun hasNetworkConnection(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
     }
 
     companion object {

@@ -41,4 +41,45 @@
     <string name="notification_reading_reminder_text">Niste otvorili BookBuddy neko vrijeme. Pogledajte svoju kolekciju!</string>
     <string name="notification_new_books_title">Nove knjige dostupne</string>
     <string name="notification_new_books_text">%1$d novih knjiga dodano u vašu biblioteku</string>
+
+    <string name="description">Opis</string>
+    <string name="appearance">Izgled</string>
+    <string name="notifications">Obavijesti</string>
+    <string name="reading_reminders">Podsjetnici za čitanje</string>
+    <string name="reading_reminders_summary">Primaj dnevne podsjetnike za čitanje</string>
+    <string name="reminder_frequency">Učestalost podsjetnika</string>
+    <string name="language">Jezik</string>
+    <string name="theme">Tema</string>
+    <string name="theme_light">Svijetla</string>
+    <string name="theme_dark">Tamna</string>
+    <string name="theme_system">Slijedi sistem</string>
+
+    <string name="update">Ažuriraj</string>
+    <string name="search_online">Pretraži online</string>
+    <string name="searching">Pretraživanje...</string>
+    <string name="not_rated">Neocijenjeno</string>
+    <string name="publication_year">Godina izdanja</string>
+    <string name="genre">Žanr</string>
+    <string name="reading_status">Status čitanja</string>
+    <string name="add_cover">Dodaj korice</string>
+    <string name="enter_title_or_author">Unesi naslov ili autora za pretraživanje</string>
+    <string name="search_failed">Pretraživanje neuspjelo</string>
+    <string name="no_books_found_search">Nema pronađenih knjiga</string>
+    <string name="failed_to_save_book">Neuspješno spremanje knjige</string>
+    <string name="failed_to_update_book">Neuspješno ažuriranje knjige</string>
+    <string name="title_required">Naslov je obavezan</string>
+    <string name="author_required">Autor je obavezan</string>
+    <string name="year_required">Godina je obavezna</string>
+    <string name="enter_valid_year">Unesi valjanu godinu</string>
+    <string name="genre_required">Žanr je obavezan</string>
+    <string name="status_required">Status je obavezan</string>
+    <string name="error">Greška</string>
+    <string name="book_not_found">Knjiga nije pronađena</string>
+    <string name="error_loading_book">Greška pri učitavanju knjige</string>
+    <string name="added_on">Dodano %1$s</string>
+    <string name="failed_to_delete_book">Neuspješno brisanje knjige</string>
+
+    <string name="new_book">Nova knjiga</string>
+    <string name="book_added_title">Knjiga dodana</string>
+    <string name="book_added_text">"%1$s" je dodana u vašu biblioteku</string>
 </resources>

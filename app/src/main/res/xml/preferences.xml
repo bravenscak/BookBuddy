@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/appearance">
+
+        <ListPreference
+            android:key="language"
+            android:title="@string/language"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:defaultValue="hr"
+            android:summary="%s" />
+
+        <ListPreference
+            android:key="theme"
+            android:title="@string/theme"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="system"
+            android:summary="%s" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/notifications">
+
+        <SwitchPreferenceCompat
+            android:key="reading_reminders"
+            android:title="@string/reading_reminders"
+            android:summary="@string/reading_reminders_summary"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="reminder_frequency"
+            android:title="@string/reminder_frequency"
+            android:entries="@array/reminder_entries"
+            android:entryValues="@array/reminder_values"
+            android:defaultValue="24"
+            android:summary="%s"
+            android:dependency="reading_reminders" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

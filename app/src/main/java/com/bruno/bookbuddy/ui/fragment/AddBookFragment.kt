@@ -1,13 +1,13 @@
 package com.bruno.bookbuddy.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.navigation.fragment.findNavController
+import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.FragmentAddBookBinding
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
@@ -73,7 +73,7 @@ class AddBookFragment : Fragment() {
     }
 
     private fun setupGenreDropdown() {
-        val genres = GenreUtils.getAllDisplayNames()
+        val genres = GenreUtils.getAllDisplayNames(requireContext())
 
         val genreAdapter = ArrayAdapter(
             requireContext(),
@@ -87,10 +87,10 @@ class AddBookFragment : Fragment() {
     private fun setupStatusDropdown() {
         val statuses = ReadingStatus.values().map { status ->
             when (status) {
-                ReadingStatus.WANT_TO_READ -> "Want to Read"
-                ReadingStatus.CURRENTLY_READING -> "Currently Reading"
-                ReadingStatus.FINISHED -> "Finished"
-                ReadingStatus.ABANDONED -> "Abandoned"
+                ReadingStatus.WANT_TO_READ -> getString(R.string.status_want_to_read)
+                ReadingStatus.CURRENTLY_READING -> getString(R.string.status_currently_reading)
+                ReadingStatus.FINISHED -> getString(R.string.status_finished)
+                ReadingStatus.ABANDONED -> getString(R.string.status_abandoned)
             }
         }
 
@@ -108,7 +108,7 @@ class AddBookFragment : Fragment() {
             binding.tvRatingValue.text = if (rating > 0) {
                 String.format("%.1f", rating)
             } else {
-                "Not rated"
+                getString(R.string.not_rated)
             }
         }
     }
@@ -136,12 +136,12 @@ class AddBookFragment : Fragment() {
         val author = binding.etAuthor.text.toString().trim()
 
         if (title.isEmpty() && author.isEmpty()) {
-            binding.tilTitle.error = "Enter title or author to search"
+            binding.tilTitle.error = getString(R.string.enter_title_or_author)
             return
         }
 
         binding.btnSearchApi.isEnabled = false
-        binding.btnSearchApi.text = "Searching..."
+        binding.btnSearchApi.text = getString(R.string.searching)
 
         bookFetcher.searchBooks(
             title = if (title.isNotEmpty()) title else null,
@@ -157,15 +157,7 @@ class AddBookFragment : Fragment() {
 
     private fun handleSearchResults(books: List<GoogleBookItem>) {
         binding.btnSearchApi.isEnabled = true
-        binding.btnSearchApi.text = "Search Online"
-
-        Log.d("AddBookFragment", "=== SEARCH RESULTS ===")
-        Log.d("AddBookFragment", "Found ${books.size} books")
-
-        books.forEach { book ->
-            Log.d("AddBookFragment", "Book: ${book.volumeInfo.title}")
-            Log.d("AddBookFragment", "  Main genre: ${book.getMainGenre()}")
-        }
+        binding.btnSearchApi.text = getString(R.string.search_online)
 
         if (books.isNotEmpty()) {
             val firstBook = books.first()
@@ -174,15 +166,15 @@ class AddBookFragment : Fragment() {
             binding.tilTitle.error = null
             binding.tilAuthor.error = null
         } else {
-            binding.tilTitle.error = "No books found"
+            binding.tilTitle.error = getString(R.string.no_books_found_search)
         }
     }
 
     private fun handleSearchError(error: String) {
         binding.btnSearchApi.isEnabled = true
-        binding.btnSearchApi.text = "Search Online"
+        binding.btnSearchApi.text = getString(R.string.search_online)
 
-        binding.tilTitle.error = "Search failed: $error"
+        binding.tilTitle.error = "${getString(R.string.search_failed)}: $error"
     }
 
     private fun populateFormFromApi(googleBook: GoogleBookItem) {
@@ -197,20 +189,6 @@ class AddBookFragment : Fragment() {
         val enumGenre = GenreUtils.mapApiGenreToEnum(apiGenre)
         val displayGenre = GenreUtils.enumToDisplay(enumGenre)
         binding.actvGenre.setText(displayGenre, false)
-    }
-
-    private fun mapApiGenreToDisplayName(apiGenre: String): String {
-        return when (apiGenre.uppercase()) {
-            "SCIENCE", "SCIENCE_FICTION" -> "Science Fiction"
-            "BIOGRAPHY" -> "Biography"
-            "MYSTERY" -> "Mystery"
-            "FANTASY" -> "Fantasy"
-            "ROMANCE" -> "Romance"
-            "HISTORY" -> "History"
-            "FICTION" -> "Fiction"
-            "OTHER" -> "Other"
-            else -> "Fiction"
-        }
     }
 
     private fun saveBook() {
@@ -231,7 +209,7 @@ class AddBookFragment : Fragment() {
         if (bookId > 0) {
             findNavController().navigateUp()
         } else {
-            showError("Failed to save book")
+            showError(getString(R.string.failed_to_save_book))
         }
     }
 
@@ -251,7 +229,7 @@ class AddBookFragment : Fragment() {
             if (rowsUpdated > 0) {
                 findNavController().navigateUp()
             } else {
-                showError("Failed to update book")
+                showError(getString(R.string.failed_to_update_book))
             }
         }
     }
@@ -261,7 +239,7 @@ class AddBookFragment : Fragment() {
 
         val title = binding.etTitle.text.toString().trim()
         if (title.isEmpty()) {
-            binding.tilTitle.error = "Title is required"
+            binding.tilTitle.error = getString(R.string.title_required)
             isValid = false
         } else {
             binding.tilTitle.error = null
@@ -269,7 +247,7 @@ class AddBookFragment : Fragment() {
 
         val author = binding.etAuthor.text.toString().trim()
         if (author.isEmpty()) {
-            binding.tilAuthor.error = "Author is required"
+            binding.tilAuthor.error = getString(R.string.author_required)
             isValid = false
         } else {
             binding.tilAuthor.error = null
@@ -277,14 +255,14 @@ class AddBookFragment : Fragment() {
 
         val yearText = binding.etYear.text.toString().trim()
         if (yearText.isEmpty()) {
-            binding.tilYear.error = "Year is required"
+            binding.tilYear.error = getString(R.string.year_required)
             isValid = false
         } else {
             val year = yearText.toIntOrNull()
             val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
 
             if (year == null || year < 1000 || year > currentYear + 1) {
-                binding.tilYear.error = "Enter valid year (1000-${currentYear + 1})"
+                binding.tilYear.error = getString(R.string.enter_valid_year) + " (1000-${currentYear + 1})"
                 isValid = false
             } else {
                 binding.tilYear.error = null
@@ -292,14 +270,14 @@ class AddBookFragment : Fragment() {
         }
 
         if (binding.actvGenre.text.toString().isEmpty()) {
-            binding.tilGenre.error = "Genre is required"
+            binding.tilGenre.error = getString(R.string.genre_required)
             isValid = false
         } else {
             binding.tilGenre.error = null
         }
 
         if (binding.actvStatus.text.toString().isEmpty()) {
-            binding.tilStatus.error = "Status is required"
+            binding.tilStatus.error = getString(R.string.status_required)
             isValid = false
         } else {
             binding.tilStatus.error = null
@@ -326,15 +304,22 @@ class AddBookFragment : Fragment() {
     }
 
     private fun getSelectedGenre(): String {
-        return GenreUtils.displayToEnum(binding.actvGenre.text.toString())
+        val selectedText = binding.actvGenre.text.toString()
+        return GenreUtils.displayToEnum(selectedText)
     }
 
     private fun getSelectedStatus(): ReadingStatus {
-        return when (binding.actvStatus.text.toString()) {
-            "Want to Read" -> ReadingStatus.WANT_TO_READ
-            "Currently Reading" -> ReadingStatus.CURRENTLY_READING
-            "Finished" -> ReadingStatus.FINISHED
-            "Abandoned" -> ReadingStatus.ABANDONED
+        val statusText = binding.actvStatus.text.toString()
+        val wantToRead = getString(R.string.status_want_to_read)
+        val currentlyReading = getString(R.string.status_currently_reading)
+        val finished = getString(R.string.status_finished)
+        val abandoned = getString(R.string.status_abandoned)
+
+        return when (statusText) {
+            wantToRead -> ReadingStatus.WANT_TO_READ
+            currentlyReading -> ReadingStatus.CURRENTLY_READING
+            finished -> ReadingStatus.FINISHED
+            abandoned -> ReadingStatus.ABANDONED
             else -> ReadingStatus.WANT_TO_READ
         }
     }
@@ -355,7 +340,7 @@ class AddBookFragment : Fragment() {
         binding.etAuthor.setText(book.author)
         binding.etYear.setText(book.year.toString())
 
-        val genreDisplayName = getGenreDisplayName(book.genre)
+        val genreDisplayName = GenreUtils.enumToDisplayString(requireContext(), book.genre)
         binding.actvGenre.setText(genreDisplayName, false)
 
         val statusDisplayName = getStatusDisplayName(book.status)
@@ -369,7 +354,7 @@ class AddBookFragment : Fragment() {
     }
 
     private fun updateUIForEditMode() {
-        binding.btnSave.text = "Update"
+        binding.btnSave.text = getString(R.string.update)
         binding.btnSearchApi.visibility = View.GONE
     }
 
@@ -379,16 +364,12 @@ class AddBookFragment : Fragment() {
         }
     }
 
-    private fun getGenreDisplayName(genreEnum: String): String {
-        return GenreUtils.enumToDisplay(genreEnum)
-    }
-
     private fun getStatusDisplayName(status: ReadingStatus): String {
         return when (status) {
-            ReadingStatus.WANT_TO_READ -> "Want to Read"
-            ReadingStatus.CURRENTLY_READING -> "Currently Reading"
-            ReadingStatus.FINISHED -> "Finished"
-            ReadingStatus.ABANDONED -> "Abandoned"
+            ReadingStatus.WANT_TO_READ -> getString(R.string.status_want_to_read)
+            ReadingStatus.CURRENTLY_READING -> getString(R.string.status_currently_reading)
+            ReadingStatus.FINISHED -> getString(R.string.status_finished)
+            ReadingStatus.ABANDONED -> getString(R.string.status_abandoned)
         }
     }
 

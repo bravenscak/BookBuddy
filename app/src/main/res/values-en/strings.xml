@@ -41,4 +41,45 @@
     <string name="notification_reading_reminder_text">You haven\'t opened BookBuddy in a while. Check out your collection!</string>
     <string name="notification_new_books_title">New books available</string>
     <string name="notification_new_books_text">%1$d new books added to your library</string>
+
+    <string name="description">Description</string>
+    <string name="appearance">Appearance</string>
+    <string name="notifications">Notifications</string>
+    <string name="reading_reminders">Reading Reminders</string>
+    <string name="reading_reminders_summary">Get reminded to read daily</string>
+    <string name="reminder_frequency">Reminder Frequency</string>
+    <string name="language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">Follow System</string>
+
+    <string name="update">Update</string>
+    <string name="search_online">Search Online</string>
+    <string name="searching">Searching...</string>
+    <string name="not_rated">Not rated</string>
+    <string name="enter_title_or_author">Enter title or author to search</string>
+    <string name="search_failed">Search failed</string>
+    <string name="no_books_found_search">No books found</string>
+    <string name="failed_to_save_book">Failed to save book</string>
+    <string name="failed_to_update_book">Failed to update book</string>
+    <string name="title_required">Title is required</string>
+    <string name="author_required">Author is required</string>
+    <string name="year_required">Year is required</string>
+    <string name="enter_valid_year">Enter valid year</string>
+    <string name="genre_required">Genre is required</string>
+    <string name="status_required">Status is required</string>
+    <string name="error">Error</string>
+    <string name="book_not_found">Book not found</string>
+    <string name="error_loading_book">Error loading book details</string>
+    <string name="added_on">Added on %1$s</string>
+    <string name="failed_to_delete_book">Failed to delete book</string>
+    <string name="publication_year">Publication Year</string>
+    <string name="genre">Genre</string>
+    <string name="reading_status">Reading Status</string>
+    <string name="add_cover">Add Cover</string>
+
+    <string name="new_book">New Book</string>
+    <string name="book_added_title">Book Added</string>
+    <string name="book_added_text">"%1$s" has been added to your library</string>
 </resources>

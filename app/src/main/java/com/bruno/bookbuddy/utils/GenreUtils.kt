@@ -1,5 +1,7 @@
 package com.bruno.bookbuddy.utils
 
+import android.content.Context
+import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.data.model.Genre
 
 object GenreUtils {
@@ -22,32 +24,32 @@ object GenreUtils {
 
     fun displayToEnum(displayName: String): String {
         return when (displayName) {
-            "Fiction" -> Genre.FICTION.name
-            "Non-Fiction" -> Genre.NON_FICTION.name
-            "Mystery" -> Genre.MYSTERY.name
-            "Romance" -> Genre.ROMANCE.name
-            "Science Fiction" -> Genre.SCIENCE_FICTION.name
-            "Fantasy" -> Genre.FANTASY.name
-            "Biography" -> Genre.BIOGRAPHY.name
-            "History" -> Genre.HISTORY.name
-            "Self-Help" -> Genre.SELF_HELP.name
-            "Other" -> Genre.OTHER.name
+            "Fiction", "Fikcija" -> Genre.FICTION.name
+            "Non-Fiction", "Nefikcija" -> Genre.NON_FICTION.name
+            "Mystery", "Misterij" -> Genre.MYSTERY.name
+            "Romance", "Romansa" -> Genre.ROMANCE.name
+            "Science Fiction", "Znanstvena fantastika" -> Genre.SCIENCE_FICTION.name
+            "Fantasy", "Fantazija" -> Genre.FANTASY.name
+            "Biography", "Biografija" -> Genre.BIOGRAPHY.name
+            "History", "Povijest" -> Genre.HISTORY.name
+            "Self-Help", "Samopomoć" -> Genre.SELF_HELP.name
+            "Other", "Ostalo" -> Genre.OTHER.name
             else -> Genre.OTHER.name
         }
     }
 
-    fun getAllDisplayNames(): List<String> {
+    fun getAllDisplayNames(context: Context): List<String> {
         return listOf(
-            "Fiction",
-            "Non-Fiction",
-            "Mystery",
-            "Romance",
-            "Science Fiction",
-            "Fantasy",
-            "Biography",
-            "History",
-            "Self-Help",
-            "Other"
+            context.getString(R.string.genre_fiction),
+            context.getString(R.string.genre_non_fiction),
+            context.getString(R.string.genre_mystery),
+            context.getString(R.string.genre_romance),
+            context.getString(R.string.genre_science_fiction),
+            context.getString(R.string.genre_fantasy),
+            context.getString(R.string.genre_biography),
+            context.getString(R.string.genre_history),
+            context.getString(R.string.genre_self_help),
+            context.getString(R.string.genre_other)
         )
     }
 
@@ -64,6 +66,22 @@ object GenreUtils {
             "self-help", "psychology" -> Genre.SELF_HELP.name
             "other" -> Genre.OTHER.name
             else -> Genre.FICTION.name
+        }
+    }
+
+    fun enumToDisplayString(context: Context, enumName: String): String {
+        return when (enumName) {
+            Genre.FICTION.name -> context.getString(R.string.genre_fiction)
+            Genre.NON_FICTION.name -> context.getString(R.string.genre_non_fiction)
+            Genre.MYSTERY.name -> context.getString(R.string.genre_mystery)
+            Genre.ROMANCE.name -> context.getString(R.string.genre_romance)
+            Genre.SCIENCE_FICTION.name -> context.getString(R.string.genre_science_fiction)
+            Genre.FANTASY.name -> context.getString(R.string.genre_fantasy)
+            Genre.BIOGRAPHY.name -> context.getString(R.string.genre_biography)
+            Genre.HISTORY.name -> context.getString(R.string.genre_history)
+            Genre.SELF_HELP.name -> context.getString(R.string.genre_self_help)
+            Genre.OTHER.name -> context.getString(R.string.genre_other)
+            else -> context.getString(R.string.genre_other)
         }
     }
 }

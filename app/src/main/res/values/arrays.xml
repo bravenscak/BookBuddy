@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="language_entries">
+        <item>Hrvatski</item>
+        <item>English</item>
+    </string-array>
+    <string-array name="language_values">
+        <item>hr</item>
+        <item>en</item>
+    </string-array>
+
+    <string-array name="theme_entries">
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_system</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>system</item>
+    </string-array>
+
+    <string-array name="reminder_entries">
+        <item>Svakih 12 sati</item>
+        <item>Dnevno</item>
+        <item>Svaka 2 dana</item>
+        <item>Tjedno</item>
+    </string-array>
+    <string-array name="reminder_values">
+        <item>12</item>
+        <item>24</item>
+        <item>48</item>
+        <item>168</item>
+    </string-array>
+</resources>

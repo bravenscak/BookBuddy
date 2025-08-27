@@ -1,6 +1,7 @@
 package com.bruno.bookbuddy
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +12,9 @@ import androidx.core.view.GravityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.bruno.bookbuddy.databinding.ActivityMainBinding
+import com.bruno.bookbuddy.utils.LocaleHelper
 import com.bruno.bookbuddy.utils.SampleDataHelper
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +28,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val currentLanguage = LocaleHelper.getCurrentLanguage(this)
+        if (currentLanguage != Locale.getDefault().language) {
+            LocaleHelper.setLocale(this, currentLanguage)
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -87,5 +96,23 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = LocaleHelper.getCurrentLanguage(newBase)
+        val context = LocaleHelper.setLocale(newBase, language)
+        super.attachBaseContext(context)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateLastOpenTime()
+    }
+
+    private fun updateLastOpenTime() {
+        val prefs = getSharedPreferences("book_buddy_prefs", MODE_PRIVATE)
+        prefs.edit()
+            .putLong("last_open_time", System.currentTimeMillis())
+            .apply()
     }
 }

@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Add Cover"
+                    android:text="@string/add_cover"
                     style="@style/Widget.Material3.Button.TextButton"
                     app:icon="@drawable/ic_add" />
 
@@ -90,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Publication Year"
+            android:hint="@string/publication_year"
             app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_calendar"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
@@ -109,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Genre"
+            android:hint="@string/genre"
             app:startIconDrawable="@drawable/ic_category"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
@@ -127,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Reading Status"
+            android:hint="@string/reading_status"
             app:startIconDrawable="@drawable/ic_status"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 

@@ -33,16 +33,18 @@ class BookAdapter(
         val tvRating: TextView = itemView.findViewById(R.id.tvRating)
 
         fun bind(book: Book) {
+            val context = itemView.context
+
             tvBookTitle.text = book.title
             tvBookAuthor.text = book.author
             tvBookYear.text = book.year.toString()
-            chipGenre.text = GenreUtils.enumToDisplay(book.genre)
+            chipGenre.text = GenreUtils.enumToDisplayString(context, book.genre)
 
             chipStatus.text = when (book.status) {
-                ReadingStatus.WANT_TO_READ -> "Want to Read"
-                ReadingStatus.CURRENTLY_READING -> "Reading"
-                ReadingStatus.FINISHED -> "Finished"
-                ReadingStatus.ABANDONED -> "Abandoned"
+                ReadingStatus.WANT_TO_READ -> context.getString(R.string.status_want_to_read)
+                ReadingStatus.CURRENTLY_READING -> context.getString(R.string.status_currently_reading)
+                ReadingStatus.FINISHED -> context.getString(R.string.status_finished)
+                ReadingStatus.ABANDONED -> context.getString(R.string.status_abandoned)
             }
 
             chipStatus.setChipBackgroundColorResource(
@@ -57,7 +59,7 @@ class BookAdapter(
             tvRating.text = if (book.rating > 0) {
                 String.format("%.1f", book.rating)
             } else {
-                "N/A"
+                context.getString(R.string.not_rated)
             }
 
             loadBookCover(book.coverPath)

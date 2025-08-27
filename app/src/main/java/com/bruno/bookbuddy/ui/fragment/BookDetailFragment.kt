@@ -1,5 +1,8 @@
 package com.bruno.bookbuddy.ui.fragment
 
+import android.app.SearchManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +21,7 @@ import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.FragmentBookDetailBinding
 import com.bruno.bookbuddy.data.model.Book
 import com.bruno.bookbuddy.data.model.ReadingStatus
+import com.bruno.bookbuddy.utils.GenreUtils
 import com.bruno.bookbuddy.utils.getBookByIdFromProvider
 import com.bruno.bookbuddy.utils.deleteBookViaProvider
 import java.io.File
@@ -60,6 +64,10 @@ class BookDetailFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    R.id.action_search_online -> {
+                        searchBookOnline()
+                        true
+                    }
                     R.id.action_edit -> {
                         navigateToEditBook()
                         true
@@ -114,7 +122,7 @@ class BookDetailFragment : Fragment() {
 
     private fun showErrorDialog(message: String) {
         AlertDialog.Builder(requireContext()).apply {
-            setTitle("Error")
+            setTitle(getString(R.string.error))
             setMessage(message)
             setPositiveButton(android.R.string.ok, null)
             show()
@@ -122,40 +130,36 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun loadBookDetails() {
-        Log.d("BookDetailFragment", "loadBookDetails: Loading book with ID = $bookId")
         val loadedBook = requireContext().getBookByIdFromProvider(bookId)
 
         if (loadedBook != null) {
             book = loadedBook
-            Log.d("BookDetailFragment", "loadBookDetails: Loaded book: ID=${book._id}, Title=${book.title}")
             displayBookDetails()
         } else {
-            Log.e("BookDetailFragment", "loadBookDetails: Book not found for ID = $bookId")
-            binding.tvBookTitle.text = "Book not found"
-            binding.tvBookAuthor.text = "Error loading book details"
+            binding.tvBookTitle.text = getString(R.string.book_not_found)
+            binding.tvBookAuthor.text = getString(R.string.error_loading_book)
         }
     }
 
     private fun displayBookDetails() {
-        Log.d("BookDetailFragment", "displayBookDetails: Displaying book: ${book.title}")
         binding.apply {
             tvBookTitle.text = book.title
             tvBookAuthor.text = book.author
             tvBookYear.text = book.year.toString()
-            tvBookGenre.text = book.genre
-            tvBookExplanation.text = "Added on ${book.createdAt.substring(0, 10)}"
+            tvBookGenre.text = GenreUtils.enumToDisplayString(requireContext(), book.genre)
+            tvBookExplanation.text = getString(R.string.added_on, book.createdAt.substring(0, 10))
 
             tvBookRating.text = if (book.rating > 0) {
                 String.format("%.1f", book.rating)
             } else {
-                "Not rated"
+                getString(R.string.not_rated)
             }
 
             chipBookStatus.text = when (book.status) {
-                ReadingStatus.WANT_TO_READ -> "Want to Read"
-                ReadingStatus.CURRENTLY_READING -> "Currently Reading"
-                ReadingStatus.FINISHED -> "Finished"
-                ReadingStatus.ABANDONED -> "Abandoned"
+                ReadingStatus.WANT_TO_READ -> getString(R.string.status_want_to_read)
+                ReadingStatus.CURRENTLY_READING -> getString(R.string.status_currently_reading)
+                ReadingStatus.FINISHED -> getString(R.string.status_finished)
+                ReadingStatus.ABANDONED -> getString(R.string.status_abandoned)
             }
 
             chipBookStatus.setChipBackgroundColorResource(
@@ -182,5 +186,21 @@ class BookDetailFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun searchBookOnline() {
+        val searchQuery = "${book.title} ${book.author}"
+        val searchIntent = Intent(Intent.ACTION_WEB_SEARCH).apply {
+            putExtra(SearchManager.QUERY, searchQuery)
+        }
+
+        if (searchIntent.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(searchIntent)
+        } else {
+            val webIntent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://www.google.com/search?q=${Uri.encode(searchQuery)}")
+            }
+            startActivity(webIntent)
+        }
     }
 }
