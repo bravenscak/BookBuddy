@@ -62,6 +62,7 @@
     <string name="genre">Žanr</string>
     <string name="reading_status">Status čitanja</string>
     <string name="add_cover">Dodaj korice</string>
+    <string name="change_cover">Izmjeni korice</string>
     <string name="enter_title_or_author">Unesi naslov ili autora za pretraživanje</string>
     <string name="search_failed">Pretraživanje neuspjelo</string>
     <string name="no_books_found_search">Nema pronađenih knjiga</string>

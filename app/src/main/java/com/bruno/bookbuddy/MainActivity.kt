@@ -64,7 +64,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initToolbar() {
-        setSupportActionBar(binding.toolbar)
+        if (supportActionBar == null) {
+            setSupportActionBar(binding.toolbar)
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
     }

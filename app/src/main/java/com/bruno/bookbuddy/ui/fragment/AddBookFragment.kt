@@ -1,11 +1,14 @@
 package com.bruno.bookbuddy.ui.fragment
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.databinding.FragmentAddBookBinding
@@ -19,10 +22,15 @@ import java.util.Date
 import java.util.Locale
 import com.bruno.bookbuddy.network.service.BookFetcher
 import com.bruno.bookbuddy.network.model.GoogleBookItem
+import com.bruno.bookbuddy.network.model.getCoverUrl
 import com.bruno.bookbuddy.network.model.getMainAuthor
 import com.bruno.bookbuddy.network.model.getMainGenre
 import com.bruno.bookbuddy.network.model.getPublishYear
 import com.bruno.bookbuddy.utils.GenreUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class AddBookFragment : Fragment() {
 
@@ -34,6 +42,18 @@ class AddBookFragment : Fragment() {
     private val isEditMode get() = bookId != -1L
 
     private lateinit var bookFetcher: BookFetcher
+
+    private var selectedImageUri: Uri? = null
+
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            binding.ivBookCover.setImageURI(it)
+            binding.btnAddCover.text = getString(R.string.change_cover)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +143,7 @@ class AddBookFragment : Fragment() {
         }
 
         binding.btnAddCover.setOnClickListener {
-
+            imagePickerLauncher.launch("image/*")
         }
 
         binding.btnSearchApi.setOnClickListener {
@@ -189,6 +209,45 @@ class AddBookFragment : Fragment() {
         val enumGenre = GenreUtils.mapApiGenreToEnum(apiGenre)
         val displayGenre = GenreUtils.enumToDisplay(enumGenre)
         binding.actvGenre.setText(displayGenre, false)
+
+        googleBook.getCoverUrl()?.let { coverUrl ->
+            downloadAndSetCover(coverUrl)
+        }
+    }
+
+    private fun downloadAndSetCover(coverUrl: String) {
+        binding.btnAddCover.text = "Downloading..."
+        binding.btnAddCover.isEnabled = false
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val url = java.net.URL(coverUrl)
+                val connection = url.openConnection()
+                val inputStream = connection.getInputStream()
+
+                val filename = "api_cover_${System.currentTimeMillis()}.jpg"
+                val file = File(requireContext().getExternalFilesDir(null), filename)
+                val outputStream = FileOutputStream(file)
+
+                inputStream.copyTo(outputStream)
+                inputStream.close()
+                outputStream.close()
+
+                launch(Dispatchers.Main) {
+                    val uri = Uri.fromFile(file)
+                    selectedImageUri = uri
+                    binding.ivBookCover.setImageURI(uri)
+                    binding.btnAddCover.text = getString(R.string.change_cover)
+                    binding.btnAddCover.isEnabled = true
+                }
+
+            } catch (e: Exception) {
+                launch(Dispatchers.Main) {
+                    binding.btnAddCover.text = getString(R.string.add_cover)
+                    binding.btnAddCover.isEnabled = true
+                }
+            }
+        }
     }
 
     private fun saveBook() {
@@ -215,13 +274,18 @@ class AddBookFragment : Fragment() {
 
     private fun updateExistingBook() {
         existingBook?.let { book ->
+            val newCoverPath = selectedImageUri?.let { uri ->
+                saveCoverImage(uri)
+            } ?: book.coverPath
+
             val updatedBook = book.copy(
                 title = binding.etTitle.text.toString().trim(),
                 author = binding.etAuthor.text.toString().trim(),
                 year = binding.etYear.text.toString().toInt(),
                 genre = getSelectedGenre(),
                 status = getSelectedStatus(),
-                rating = binding.rbRating.rating
+                rating = binding.rbRating.rating,
+                coverPath = newCoverPath
             )
 
             val rowsUpdated = requireContext().updateBookViaProvider(updatedBook)
@@ -290,6 +354,10 @@ class AddBookFragment : Fragment() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val currentTime = dateFormat.format(Date())
 
+        val coverPath = selectedImageUri?.let { uri ->
+            saveCoverImage(uri)
+        } ?: ""
+
         return Book(
             _id = null,
             title = binding.etTitle.text.toString().trim(),
@@ -298,9 +366,26 @@ class AddBookFragment : Fragment() {
             genre = getSelectedGenre(),
             status = getSelectedStatus(),
             rating = binding.rbRating.rating,
-            coverPath = "",
+            coverPath = coverPath,
             createdAt = currentTime
         )
+    }
+
+    private fun saveCoverImage(uri: Uri): String {
+        return try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            val filename = "book_cover_${System.currentTimeMillis()}.jpg"
+            val file = File(requireContext().getExternalFilesDir(null), filename)
+
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     private fun getSelectedGenre(): String {
@@ -361,6 +446,7 @@ class AddBookFragment : Fragment() {
     private fun loadBookCover(coverPath: String) {
         if (coverPath.isNotEmpty() && java.io.File(coverPath).exists()) {
             binding.ivBookCover.setImageURI(android.net.Uri.fromFile(java.io.File(coverPath)))
+            binding.btnAddCover.text = getString(R.string.change_cover)
         }
     }
 

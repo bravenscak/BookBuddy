@@ -3,6 +3,8 @@ package com.bruno.bookbuddy.ui.fragment
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -11,6 +13,7 @@ import com.bruno.bookbuddy.R
 import com.bruno.bookbuddy.receiver.BookSyncReceiver
 import com.bruno.bookbuddy.service.ReadingReminderManager
 import com.bruno.bookbuddy.utils.LocaleHelper
+import com.google.android.material.snackbar.Snackbar
 
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -80,10 +83,23 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private fun handleThemeChange(theme: String) {
         preferenceManager.sharedPreferences?.edit()
-            ?.putString("selected_theme", theme)
+            ?.putString("theme", theme)
             ?.apply()
 
-        showRestartRequiredMessage()
+        val message = when (theme) {
+            "light" -> "Switched to light theme"
+            "dark" -> "Switched to dark theme"
+            "system" -> "Following system theme"
+            else -> "Theme changed"
+        }
+
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
+
+        when (theme) {
+            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
     }
 
     private fun handleRemindersChange(enabled: Boolean) {

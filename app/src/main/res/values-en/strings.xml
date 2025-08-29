@@ -78,6 +78,7 @@
     <string name="genre">Genre</string>
     <string name="reading_status">Reading Status</string>
     <string name="add_cover">Add Cover</string>
+    <string name="change_cover">Change Cover</string>
 
     <string name="new_book">New Book</string>
     <string name="book_added_title">Book Added</string>

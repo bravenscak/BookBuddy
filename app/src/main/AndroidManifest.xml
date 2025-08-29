@@ -32,7 +32,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookBuddy"
         android:requestLegacyExternalStorage="true"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:name=".BookBuddyApplication"
+        android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
             android:name=".ui.activity.SplashActivity"
